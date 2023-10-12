@@ -6,11 +6,10 @@ from .models import SubTask
 class TaskAdmin(admin.ModelAdmin):
     list_display = (
         "__str__",
-        "team",
         "task",
     )
 
     search_fields = (
-        "team",
         "task",
+        "team",
     )
