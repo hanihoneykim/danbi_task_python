@@ -6,11 +6,11 @@ from .models import Task
 class TaskAdmin(admin.ModelAdmin):
     list_display = (
         "title",
-        "created_user",
+        "create_user",
         "team",
     )
 
     search_fields = (
         "title",
-        "=created_user__username",
+        "=create_user__username",
     )

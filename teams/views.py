@@ -15,5 +15,6 @@ class Teams(APIView):
         serializer = TeamSerializer(
             teams,
             many=True,
+            context={"request": request},
         )
         return Response(serializer.data, status=HTTP_200_OK)

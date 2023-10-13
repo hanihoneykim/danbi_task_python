@@ -1,21 +1,26 @@
 from rest_framework import serializers
 from .models import SubTask
+from teams.serializers import NameTeamSerializer
 
 
 class SubTaskSerializer(serializers.ModelSerializer):
-    team_names = serializers.SerializerMethodField(read_only=True)
+    team = NameTeamSerializer(read_only=True, many=True)
 
     class Meta:
         model = SubTask
         fields = (
             "id",
-            "team_names",
+            "team",
             "is_complete",
             "created_at",
             "modified_at",
-            "completed_data",
+            "completed_date",
         )
 
-    def get_team_names(self, obj):
-        team_names = [str(team) for team in obj.team.all()]
-        return ", ".join(team_names)
+
+class TinySubTaskSerializer(serializers.ModelSerializer):
+    team = NameTeamSerializer(many=True)
+
+    class Meta:
+        model = SubTask
+        fields = ("team",)

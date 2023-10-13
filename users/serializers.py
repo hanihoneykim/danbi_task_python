@@ -20,13 +20,26 @@ class UserSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "username",
-            "team",
             "team_name",
         )
         read_only_fields = ("password",)
 
     def get_team_name(self, obj):
-        if obj.team:
-            return f"{obj.team.name}팀"
+        teams = obj.team.all()
+        if teams:
+            team_names = [team.name for team in teams]
+            return ", ".join(team_names) + "팀"
         else:
             return "No Team"
+
+
+class IDUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id",)
+
+
+class NameUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("name",)

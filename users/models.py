@@ -16,9 +16,3 @@ class User(AbstractUser):
         help_text="15자 이내로 만들어주세요. 영어 소문자, 특수문자 (_) 사용 가능.",
         default="",
     )
-    team = models.ForeignKey(
-        "teams.Team",
-        on_delete=models.SET_NULL,
-        related_name="members",
-        null=True,
-    )

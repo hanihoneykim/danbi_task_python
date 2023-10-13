@@ -5,7 +5,7 @@ from common.models import CommonModel
 class Task(CommonModel):
     """Model Definition for Task"""
 
-    created_user = models.ForeignKey(
+    create_user = models.ForeignKey(
         "users.User",
         on_delete=models.SET_NULL,
         related_name="tasks",

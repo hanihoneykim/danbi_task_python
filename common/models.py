@@ -9,7 +9,7 @@ class CommonModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     is_complete = models.BooleanField(default=False)
-    completed_data = models.DateTimeField(null=True, blank=True)
+    completed_date = models.DateTimeField(null=True, blank=True)
 
     def mark_as_complete(self):
         self.is_complete = True

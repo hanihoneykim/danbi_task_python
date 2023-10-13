@@ -13,7 +13,6 @@ class CustomUserAdmin(UserAdmin):
                     "username",
                     "password",
                     "name",
-                    "team",
                 ),
                 "classes": ("wide",),
             },
