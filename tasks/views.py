@@ -108,7 +108,8 @@ class TaskDetail(APIView):
                             task.subtasks.add(team)
                         except Team.DoesNotExist:
                             pass
-
+            task.save()
+            serializer = TaskSerializer(task)
             return Response(serializer.data)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
