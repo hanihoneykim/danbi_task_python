@@ -84,33 +84,40 @@ class TaskDetail(APIView):
         )
 
         if serializer.is_valid():
-            # 업데이트하려는 Task의 Team 정보를 업데이트
+            # 주 작업의 팀을 업데이트하려면
             new_team = serializer.validated_data.get("team")
             if new_team:
                 task.team = new_team
                 task.save()
 
-            # 받아온 SubTask의 Team 정보로 SubTasks를 업데이트
+            # 서브태스크 처리
             subtask_data = request.data.get("subtasks", [])
+            if subtask_data:
+                for subtask_info in subtask_data:
+                    is_complete = subtask_info.get("is_complete", False)
+                    if is_complete:
+                        # is_complete가 True로 설정된 경우 해당 서브태스크의 팀 업데이트를 건너뛰기
+                        continue
 
-            # SubTasks의 Team 정보 초기화
-            task.subtasks.clear()  # 기존의 Team 정보를 모두 초기화합니다.
+                    # 서브태스크가 완료되지 않았으므로 팀을 업데이트
+                    task.subtasks.clear()  # 기존 팀 정보 초기화
 
-            # 각 SubTask의 "team" 필드 처리
-            for subtask_info in subtask_data:
-                team_list = subtask_info.get("team", [])
-                for team_info in team_list:
-                    team_name = team_info.get("name", None)
-                    if team_name:
-                        try:
-                            # Team 객체 찾거나 생성
-                            team, created = Team.objects.get_or_create(name=team_name)
-                            task.subtasks.add(team)
-                        except Team.DoesNotExist:
-                            pass
+                    # 서브태스크의 팀 필드 처리
+                    team_list = subtask_info.get("team", [])
+                    for team_info in team_list:
+                        team_name = team_info.get("name", None)
+                        if team_name:
+                            try:
+                                # 팀 객체 조회 또는 생성
+                                team, created = Team.objects.get_or_create(name=team_name)
+                                task.subtasks.add(team)
+                            except Team.DoesNotExist:
+                                pass
+
             task.save()
             serializer = TaskSerializer(task)
             return Response(serializer.data)
+
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
