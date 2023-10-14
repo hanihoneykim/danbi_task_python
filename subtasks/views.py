@@ -59,16 +59,14 @@ class SubTaskDetail(APIView):
                 subtask.completed_date = timezone.now()
 
             if "team" in request.data:
-                team_names = request.data["team"]
-                # 기존 team 값 초기화
+                team_names_str = request.data["team"]
+                team_names = [team_name.strip() for team_name in team_names_str.split(",")]
                 subtask.team.clear()
-                # 새로운 team 이름을 사용하여 추가
                 for team_name in team_names:
                     try:
                         team = Team.objects.get(name=team_name)
                         subtask.team.add(team)
                     except Team.DoesNotExist:
-                        # 존재하지 않는 팀 이름에 대한 처리
                         pass
 
             subtask.save()
@@ -90,7 +88,7 @@ class SubTaskDetail(APIView):
 
     def delete(self, request, pk):
         subtask = self.get_object(pk)
-        if subtask.user != request.user:
+        if request.user not in subtask.team.all().members.all():
             raise PermissionDenied
         if subtask.is_complete:
             return Response({"주의": "완료된 하위과제는 삭제할 수 없습니다."}, status=HTTP_400_BAD_REQUEST)

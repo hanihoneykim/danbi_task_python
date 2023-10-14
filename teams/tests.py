@@ -15,7 +15,7 @@ class TestTeams(APITestCase):
 
         # team.members 확인
         member_names = list(team.members.values_list("name", flat=True))
-        print("Member Names:", member_names)
+        # print("Member Names:", member_names)
 
         response = self.client.get("/api/v1/teams/")
         data = response.json()
