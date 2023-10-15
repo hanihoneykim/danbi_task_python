@@ -21,7 +21,7 @@ from django.conf import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # path("", include("homepage.urls")),
+    path("", include("mytask.urls")),
     path("api/v1/tasks/", include("tasks.urls")),
     path("api/v1/subtasks/", include("subtasks.urls")),
     path("api/v1/users/", include("users.urls")),

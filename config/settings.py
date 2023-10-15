@@ -40,6 +40,7 @@ CUSTOM_APPS = [
     "common.apps.CommonConfig",
     "tasks.apps.TasksConfig",
     "subtasks.apps.SubtasksConfig",
+    "mytask.apps.MytaskConfig",
 ]
 
 SYSTEM_APPS = [
