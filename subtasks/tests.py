@@ -81,7 +81,6 @@ class TestSubtaskDetail(APITestCase):
         response = self.client.get("/api/v1/subtasks/1")
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        print("get_data:", data)
 
         # team_dicts 리스트에서 첫 번째 팀의 이름 추출
         expected_team_name = self.team_dicts[0]["name"]
@@ -106,7 +105,6 @@ class TestSubtaskDetail(APITestCase):
 
         # team.members 확인
         self.team_names = list(team_dicts)
-        print("Team Names:", self.team_names)
 
         team_names_str = "team1, team3"
 
@@ -117,10 +115,8 @@ class TestSubtaskDetail(APITestCase):
             },
         )
 
-        print(response)
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        print("Data:", data)
 
         # team_dicts 리스트에서 첫 번째 팀의 이름 추출
         expected_team_name = team_dicts[0]["name"]

@@ -30,15 +30,17 @@ class TeamSerializer(serializers.ModelSerializer):
 
 
 class NameTeamSerializer(serializers.ModelSerializer):
-    is_myteam = serializers.SerializerMethodField(read_only=True)
+    # is_myteam = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Team
         fields = (
             "name",
-            "is_myteam",
+            # "is_myteam",
         )
 
+
+"""
     def get_is_myteam(self, obj):
         # 현재 요청을 보내고 있는 사용자
         current_user = self.context["request"].user
@@ -47,3 +49,4 @@ class NameTeamSerializer(serializers.ModelSerializer):
         # 현재 사용자가 팀의 멤버인지 확인
         is_member = current_user in members
         return is_member
+"""

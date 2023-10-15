@@ -73,8 +73,8 @@ class TaskDetail(APIView):
 
     def put(self, request, pk):
         task = self.get_object(pk)
-        if task.create_user != request.user:
-            raise PermissionDenied
+        # if task.create_user != request.user:
+        # raise PermissionDenied
 
         serializer = TaskSerializer(
             task,
@@ -94,23 +94,21 @@ class TaskDetail(APIView):
             subtask_data = request.data.get("subtasks", [])
             if subtask_data:
                 for subtask_info in subtask_data:
-                    is_complete = subtask_info.get("is_complete", False)
+                    is_complete = subtask_info.get("is_complete")
                     if is_complete:
-                        # is_complete가 True로 설정된 경우 해당 서브태스크의 팀 업데이트를 건너뛰기
                         continue
 
-                    # 서브태스크가 완료되지 않았으므로 팀을 업데이트
-                    task.subtasks.clear()  # 기존 팀 정보 초기화
+                    subtask_id = subtask_info.get("id")
+                    subtask = task.subtasks.get(id=subtask_id)
+                    subtask.team.clear()  # 기존 팀 정보 초기화
 
-                    # 서브태스크의 팀 필드 처리
-                    team_list = subtask_info.get("team", [])
-                    for team_info in team_list:
-                        team_name = team_info.get("name", None)
-                        if team_name:
+                    if "team" in subtask_info:
+                        team_names_str = subtask_info["team"]
+                        team_names = [team_name.strip() for team_name in team_names_str.split(",")]
+                        for team_name in team_names:
                             try:
-                                # 팀 객체 조회 또는 생성
-                                team, created = Team.objects.get_or_create(name=team_name)
-                                task.subtasks.add(team)
+                                team = Team.objects.get(name=team_name)
+                                subtask.team.add(team)
                             except Team.DoesNotExist:
                                 pass
 

@@ -23,4 +23,7 @@ class TinySubTaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SubTask
-        fields = ("team",)
+        fields = (
+            "id",
+            "team",
+        )
