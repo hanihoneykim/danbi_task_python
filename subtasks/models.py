@@ -15,7 +15,3 @@ class SubTask(CommonModel):
         related_name="subtasks",
         null=True,
     )
-
-    def __str__(self):
-        team_names = ", ".join([str(team) for team in self.team.all()])
-        return f"{self.task}의 SubTask: {team_names}"

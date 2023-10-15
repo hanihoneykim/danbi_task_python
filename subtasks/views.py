@@ -3,7 +3,12 @@ from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_204_NO_CONTENT
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_400_BAD_REQUEST,
+    HTTP_204_NO_CONTENT,
+    HTTP_404_NOT_FOUND,
+)
 from rest_framework.exceptions import NotFound, PermissionDenied
 from .models import SubTask
 from teams.models import Team
@@ -43,9 +48,12 @@ class SubTaskDetail(APIView):
     def put(self, request, pk):
         subtask = self.get_object(pk)
         user = request.user
+
+        # 팀에 속한 멤버인지 확인
         team_members = subtask.team.all().values_list("members", flat=True)
         if user.id not in team_members:
             raise PermissionDenied("You do not have permission to edit this SubTask.")
+
         serializer = SubTaskSerializer(
             subtask,
             data=request.data,
@@ -58,6 +66,7 @@ class SubTaskDetail(APIView):
                 subtask.is_complete = True
                 subtask.completed_date = timezone.now()
 
+            # team을 string으로 받았다면 해당 처리
             if "team" in request.data:
                 team_names_str = request.data["team"]
                 team_names = [team_name.strip() for team_name in team_names_str.split(",")]
@@ -71,12 +80,11 @@ class SubTaskDetail(APIView):
 
             subtask.save()
 
+            # task의 모든 SubTask가 완료되면 Task의 is_complete도 True로 설정
             task = subtask.task
             all_subtasks_complete = (
                 task.subtasks.all().filter(is_complete=True).count() == task.subtasks.all().count()
             )
-
-            # 모든 SubTask가 완료되면 Task의 is_complete도 True로 설정
             if all_subtasks_complete:
                 task.is_complete = True
                 task.save()

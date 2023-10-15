@@ -73,8 +73,9 @@ class TaskDetail(APIView):
 
     def put(self, request, pk):
         task = self.get_object(pk)
-        # if task.create_user != request.user:
-        # raise PermissionDenied
+        # 작성자만 수정 가능
+        if task.create_user != request.user:
+            raise PermissionDenied
 
         serializer = TaskSerializer(
             task,
@@ -94,10 +95,12 @@ class TaskDetail(APIView):
             subtask_data = request.data.get("subtasks", [])
             if subtask_data:
                 for subtask_info in subtask_data:
+                    # is_coplete 처리
                     is_complete = subtask_info.get("is_complete")
                     if is_complete:
                         continue
 
+                    # subtask-team 처리
                     subtask_id = subtask_info.get("id")
                     subtask = task.subtasks.get(id=subtask_id)
                     subtask.team.clear()  # 기존 팀 정보 초기화
@@ -139,28 +142,18 @@ class TaskSubTasks(APIView):
         return Response(serializer.data)
 
     def post(self, request, pk):
-        # Task 객체를 가져옵니다.
         task = self.get_object(pk)
-
-        # 요청 데이터에서 "team" 필드의 문자열 리스트를 추출합니다.
+        # request 데이터에서 "team" 필드의 문자열 리스트를 추출
         team_names = request.data.get("team", [])
-
-        # Task와 관련된 새로운 SubTask를 생성합니다.
         subtask = SubTask.objects.create(task=task)
 
-        # 각 팀 이름에 대해 반복합니다.
         for team_name in team_names:
             try:
-                # 팀 이름으로 팀 객체를 데이터베이스에서 찾습니다.
                 team = Team.objects.get(name=team_name)
-
-                # SubTask와 팀을 연결하기 위해 add() 메서드를 사용합니다.
                 subtask.team.add(team)
             except Team.DoesNotExist:
-                # 팀이 존재하지 않는 경우, 에러를 반환합니다.
                 return Response(
                     {"error": f"팀 '{team_name}'을(를) 찾을 수 없음"}, status=HTTP_404_NOT_FOUND
                 )
-        # SubTask 객체를 직렬화하고 클라이언트에 반환합니다.
         serializer = SubTaskSerializer(subtask, context={"request": request})
         return Response(serializer.data, status=HTTP_201_CREATED)

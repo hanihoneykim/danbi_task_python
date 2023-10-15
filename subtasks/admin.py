@@ -4,10 +4,7 @@ from .models import SubTask
 
 @admin.register(SubTask)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = (
-        "__str__",
-        "task",
-    )
+    list_display = ("task",)
 
     search_fields = (
         "task",
